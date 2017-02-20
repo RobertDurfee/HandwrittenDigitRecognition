@@ -17,7 +17,7 @@ public:
 	char * GetPixelsValue();
 
 	void Save(char * filename);
-	void Read(char * filename);
+	void Open(char * filename);
 
 private:
 	Col<double> pixels;
@@ -26,7 +26,7 @@ private:
 
 HandwrittenDigit::HandwrittenDigit(char * imageBitmapFile)
 {
-	Read(imageBitmapFile);
+	Open(imageBitmapFile);
 }
 HandwrittenDigit::HandwrittenDigit(unsigned char * pixelsValue)
 {
@@ -55,7 +55,7 @@ char * HandwrittenDigit::GetPixelsValue()
 	return output;
 }
 
-void HandwrittenDigit::Read(char * imageBitmapFile)
+void HandwrittenDigit::Open(char * imageBitmapFile)
 {
 	pixels.set_size(28 /*Pixel Width*/ * 28 /*Pixel Height*/);
 
