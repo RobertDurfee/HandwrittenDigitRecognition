@@ -9,55 +9,55 @@ using namespace arma;
 class HandwrittenDigit
 {
 public:
-	HandwrittenDigit(string);
-	HandwrittenDigit(unsigned char *);
-	HandwrittenDigit(Col<double>);
+	HandwrittenDigit(char * imageBitmapFile);
+	HandwrittenDigit(unsigned char * pixelsValue);
+	HandwrittenDigit(Col<double> pixelsPercentage);
 
 	Col<double> GetPixelsPercentage();
 	char * GetPixelsValue();
 
-	void Save(string);
-	void Read(string);
+	void Save(char * filename);
+	void Read(char * filename);
 
 private:
 	Col<double> pixels;
 
 };
 
-HandwrittenDigit::HandwrittenDigit(string imageBitmapFile)
+HandwrittenDigit::HandwrittenDigit(char * imageBitmapFile)
 {
-	this->Read(imageBitmapFile);
+	Read(imageBitmapFile);
 }
-HandwrittenDigit::HandwrittenDigit(unsigned char * pixels)
+HandwrittenDigit::HandwrittenDigit(unsigned char * pixelsValue)
 {
-	this->pixels.set_size(28 /*Pixel Width*/ * 28 /*Pixel Height*/);
+	pixels.set_size(28 /*Pixel Width*/ * 28 /*Pixel Height*/);
 	for (int i = 0; i < 28 /*Pixel Width*/ * 28 /*Pixel Height*/; i++)
-		this->pixels[i] = (double)(pixels[i]) / (double)256;
+		pixels[i] = (double)(pixelsValue[i]) / (double)256;
 }
-HandwrittenDigit::HandwrittenDigit(Col<double> pixels)
+HandwrittenDigit::HandwrittenDigit(Col<double> pixelsPercentage)
 {
-	this->pixels.set_size(28 /*Pixel Width*/ * 28 /*Pixel Height*/);
+	pixels.set_size(28 /*Pixel Width*/ * 28 /*Pixel Height*/);
 	for (int i = 0; i < 28 /*Pixel Width*/ * 28 /*Pixel Height*/; i++)
-		this->pixels[i] = pixels[i];	
+		pixels[i] = pixelsPercentage[i];
 }
 
 Col<double> HandwrittenDigit::GetPixelsPercentage()
 {
-	return this->pixels;
+	return pixels;
 }
 char * HandwrittenDigit::GetPixelsValue()
 {
 	char * output = (char *)malloc(28 /*Pixel Width*/ * 28 /*Pixel Height*/);
 
 	for (int i = 0; i < 28 /*Pixel Width*/ * 28 /*Pixel Height*/; i++)
-		output[i] = (unsigned char)(this->pixels[i] * (double)256);
+		output[i] = (unsigned char)(pixels[i] * (double)256);
 
 	return output;
 }
 
-void HandwrittenDigit::Read(string imageBitmapFile)
+void HandwrittenDigit::Read(char * imageBitmapFile)
 {
-	this->pixels.set_size(28 /*Pixel Width*/ * 28 /*Pixel Height*/);
+	pixels.set_size(28 /*Pixel Width*/ * 28 /*Pixel Height*/);
 
 	Bitmap bmp(imageBitmapFile);
 
@@ -78,12 +78,12 @@ void HandwrittenDigit::Read(string imageBitmapFile)
 			digit[k + i * 28] = newDigit[j + i * 28];
 
 	for (int i = 0; i < 784; i++)
-		this->pixels[i] = (double)((unsigned char)(255 - digit[i])) / (double)256;
+		pixels[i] = (double)((unsigned char)(255 - digit[i])) / (double)256;
 }
-void HandwrittenDigit::Save(string imageBitmapFile)
+void HandwrittenDigit::Save(char * imageBitmapFile)
 {
 	char digit[28 /*Pixel Width*/ * 28 /*Pixel Height*/];
-	memcpy(digit, this->GetPixelsValue(), 28 /*Pixel Width*/ * 28 /*Pixel Height*/);
+	memcpy(digit, GetPixelsValue(), 28 /*Pixel Width*/ * 28 /*Pixel Height*/);
 	
 	char * digitData = (char *)malloc(2352);
 	char * newdigit = (char *)malloc(784);
