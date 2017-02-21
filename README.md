@@ -10,6 +10,7 @@ HandwrittenDigitRecognizer(string neuralNetworkFilename);
 HandwrittenDigitRecognizer(string neuralNetworkFilename, string trainingDigitsRawFilename, string trainingLabelsRawFilename, int epochs = RECOMMENDED_EPOCHS, int miniBatchSize = RECOMMENDED_MINI_BATCH_SIZE, double learningRate = RECOMMENDED_LEARNING_RATE);
 HandwrittenDigitRecognizer(string neuralNetworkFilename, NeuralData trainingData, int epochs = RECOMMENDED_EPOCHS, int miniBatchSize = RECOMMENDED_MINI_BATCH_SIZE, double learningRate = RECOMMENDED_LEARNING_RATE);
 
+HandwrittenDigitRecognizer(vector<int> sizes);
 HandwrittenDigitRecognizer(vector<int> sizes, string trainingDigitsRawFilename, string trainingLabelsRawFilename,int epochs = RECOMMENDED_EPOCHS, int miniBatchSize = RECOMMENDED_MINI_BATCH_SIZE, double learningRate = RECOMMENDED_LEARNING_RATE);
 HandwrittenDigitRecognizer(vector<int> sizes, NeuralData trainingData, int epochs = RECOMMENDED_EPOCHS, int miniBatchSize = RECOMMENDED_MINI_BATCH_SIZE, double learningRate = RECOMMENDED_LEARNING_RATE);
 
