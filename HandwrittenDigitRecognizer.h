@@ -20,6 +20,7 @@ public:
 	HandwrittenDigitRecognizer(string neuralNetworkFilename, string trainingDigitsRawFilename, string trainingLabelsRawFilename, int epochs, int miniBatchSize, double learningRate);
 	HandwrittenDigitRecognizer(string neuralNetworkFilename, NeuralData trainingData, int epochs, int miniBatchSize, double learningRate);
 
+	HandwrittenDigitRecognizer(vector<int> sizes);
 	HandwrittenDigitRecognizer(vector<int> sizes, string trainingDigitsRawFilename, string trainingLabelsRawFilename, int epochs, int miniBatchSize, double learningRate);
 	HandwrittenDigitRecognizer(vector<int> sizes, NeuralData trainingData, int epochs, int miniBatchSize, double learningRate);
 
@@ -64,6 +65,10 @@ HandwrittenDigitRecognizer::HandwrittenDigitRecognizer(string neuralNetworkFilen
 	Train(trainingData, epochs, miniBatchSize, learningRate);
 }
 
+HandwrittenDigitRecognizer::HandwrittenDigitRecognizer(vector<int> size)
+{
+	SetNeuralNetwork(sizes);
+}
 HandwrittenDigitRecognizer::HandwrittenDigitRecognizer(vector<int> sizes, string trainingDigitsRawFilename, string trainingLabelsRawFilename, int epochs = RECOMMENDED_EPOCHS, int miniBatchSize = RECOMMENDED_MINI_BATCH_SIZE, double learningRate = RECOMMENDED_LEARNING_RATE)
 {
 	SetNeuralNetwork(sizes);
