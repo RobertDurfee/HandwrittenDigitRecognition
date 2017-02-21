@@ -1,14 +1,12 @@
 #ifndef HANDWRITTEN_DIGIT_RECOGNIZER_HEADER
 #define HANDWRITTEN_DIGIT_RECOGNIZER_HEADER
 
-#include "ArtificialNeuralNetwork.h"
-#include "HandwrittenDigit.h"
-#include <armadillo>
-#include <string>
-#include <vector>
-#include <fstream>
+#include "ArtificialNeuralNetwork.h"  //NeuralNetwork, NeuralData, NeuralDataPoint, NeuralInput, NeuralOutput
+#include "HandwrittenDigit.h"         //HandwrittenDigit
+#include <string>                     //string
+#include <vector>                     //vector
+#include <fstream>                    //ifstream, ofstream
 
-using namespace arma;
 using namespace std;
 
 #define RECOMMENDED_EPOCHS           100
