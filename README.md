@@ -84,4 +84,4 @@ int main()
 	return 0;
 }
 ```
-This example uses a pre-trained `NeuralNetwork` saved to a file which, for convenience, is provided. A `HandwrittenDigit` is defined by loading a bitmap of the number seven (also provided). The result of the `Classify` method are then outputted to the standard output stream.
+This example uses a pre-trained `NeuralNetwork` saved to a file which, for convenience, is provided. A `HandwrittenDigit` is defined by loading a bitmap of the number seven (also provided). The result of the `Classify` method is then outputted to the standard output stream.
