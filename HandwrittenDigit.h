@@ -1,8 +1,8 @@
 #ifndef HANDWRITTEN_DIGIT_HEADER
 #define HANDWRITTEN_DIGIT_HEADER
 
-#include "Bitmap.h"
-#include "ArtificialNeuralNetwork.h"
+#include "Bitmap.h"                   //Bitmap
+#include "ArtificialNeuralNetwork.h"  //NeuralInput
 
 using namespace arma;
 
