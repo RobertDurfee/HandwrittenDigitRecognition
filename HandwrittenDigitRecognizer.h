@@ -11,100 +11,144 @@
 using namespace arma;
 using namespace std;
 
+#define RECOMMENDED_EPOCHS           100
+#define RECOMMENDED_MINI_BATCH_SIZE   30
+#define RECOMMENDED_LEARNING_RATE    0.1
+
 class HandwrittenDigitRecognizer
 {
 public:
-	HandwrittenDigitRecognizer(string neuralNetworkFileDirectory);
-	HandwrittenDigitRecognizer(vector<int> sizes, string trainingDigitsRawFileDirectory, string trainingLabelsRawFileDirectory);
-	HandwrittenDigitRecognizer(vector<int> sizes, int epochs, int miniBatchSize, double learningRate, string trainingDigitsRawFileDirectory, string trainingLabelsRawFileDirectory);
-	HandwrittenDigitRecognizer(vector<int> sizes, NeuralData trainingData);
-	HandwrittenDigitRecognizer(vector<int> sizes, int epochs, int miniBatchSize, double learningRate, NeuralData trainingData);
-	HandwrittenDigitRecognizer(NeuralNetwork * neuralNetwork);
-	HandwrittenDigitRecognizer(NeuralNetwork * neuralNetwork, int sizes, int miniBatchSize, double learningRate, string trainingDigitsRawFileDirectory, string trainingLabelsRawFileDirectory);
-	HandwrittenDigitRecognizer(NeuralNetwork * neuralNetwork, string trainingDigitsRawFileDirectory, string trainingLabelsRawFileDirectory);
-	HandwrittenDigitRecognizer(NeuralNetwork * neuralNetwork, int epochs, int miniBatchSize, double learningRate, NeuralData trainingData);
-	HandwrittenDigitRecognizer(NeuralNetwork * neuralNetwork, NeuralData trainingData);
+	HandwrittenDigitRecognizer(string neuralNetworkFilename);
+	HandwrittenDigitRecognizer(string neuralNetworkFilename, string trainingDigitsRawFilename, string trainingLabelsRawFilename, int epochs, int miniBatchSize, double learningRate);
+	HandwrittenDigitRecognizer(string neuralNetworkFilename, NeuralData trainingData, int epochs, int miniBatchSize, double learningRate);
+
+	HandwrittenDigitRecognizer(vector<int> sizes, string trainingDigitsRawFilename, string trainingLabelsRawFilename, int epochs, int miniBatchSize, double learningRate);
+	HandwrittenDigitRecognizer(vector<int> sizes, NeuralData trainingData, int epochs, int miniBatchSize, double learningRate);
+
+	HandwrittenDigitRecognizer(NeuralNetwork neuralNetwork);
+	HandwrittenDigitRecognizer(NeuralNetwork neuralNetwork, string trainingDigitsRawFilename, string trainingLabelsRawFilename, int epochs, int miniBatchSize, double learningRate);
+	HandwrittenDigitRecognizer(NeuralNetwork neuralNetwork, NeuralData trainingData, int epochs, int miniBatchSize, double learningRate);
 
 	~HandwrittenDigitRecognizer();
 
+	void Train(string trainingDigitsRawFilename, string trainingLabelsRawFilename, int epochs, int miniBatchSize, double learningRate);
+	void Train(NeuralData trainingData, int epochs, int miniBatchSize, double learningRate);
+
 	int Classify(HandwrittenDigit digit);
 
+	void SetNeuralNetwork(string neuralNetworkFilename);
+	void SetNeuralNetwork(vector<int> sizes);
+	void SetNeuralNetwork(NeuralNetwork neuralNetwork);
+	NeuralNetwork * GetNeuralNetwork();
+
 private:
-	NeuralNetwork * neuralNetwork;
+	NeuralNetwork * neuralNetwork = NULL;
 
 	NeuralData Vectorize(char * digits, char * labels);
-	char * ReadDigits(string digitsRawFileDirectory);
-	char * ReadLabels(string labelsRawFileDirectory);
+	char * ReadDigits(string digitsRawFilename);
+	char * ReadLabels(string labelsRawFilename);
 };
 
-HandwrittenDigitRecognizer::HandwrittenDigitRecognizer(string neuralNetworkFileDirectory)
+HandwrittenDigitRecognizer::HandwrittenDigitRecognizer(string neuralNetworkFilename)
 {
-	neuralNetwork = new NeuralNetwork(neuralNetworkFileDirectory, NULL);
+	SetNeuralNetwork(neuralNetworkFilename);
 }
-HandwrittenDigitRecognizer::HandwrittenDigitRecognizer(vector<int> sizes, string trainingDigitsRawFileDirectory, string trainingLabelsRawFileDirectory)
+HandwrittenDigitRecognizer::HandwrittenDigitRecognizer(string neuralNetworkFilename, string trainingDigitsRawFilename, string trainingLabelsRawFilename, int epochs = RECOMMENDED_EPOCHS, int miniBatchSize = RECOMMENDED_MINI_BATCH_SIZE, double learningRate = RECOMMENDED_LEARNING_RATE)
 {
-	neuralNetwork = new NeuralNetwork(sizes, NULL);
+	SetNeuralNetwork(neuralNetworkFilename);
 
-	char * digits = ReadDigits(trainingDigitsRawFileDirectory);
-	char * labels = ReadLabels(trainingLabelsRawFileDirectory);
-	
-	neuralNetwork->StochasticGradientDescent(Vectorize(digits, labels), 100, 30, 0.1);
+	Train(trainingDigitsRawFilename, trainingLabelsRawFilename, epochs, miniBatchSize, learningRate);
 }
-HandwrittenDigitRecognizer::HandwrittenDigitRecognizer(vector<int> sizes, int epochs, int miniBatchSize, double learningRate, string trainingDigitsRawFileDirectory, string trainingLabelsRawFileDirectory)
+HandwrittenDigitRecognizer::HandwrittenDigitRecognizer(string neuralNetworkFilename, NeuralData trainingData, int epochs = RECOMMENDED_EPOCHS, int miniBatchSize = RECOMMENDED_MINI_BATCH_SIZE, double learningRate = RECOMMENDED_LEARNING_RATE)
 {
-	neuralNetwork = new NeuralNetwork(sizes, NULL);
+	SetNeuralNetwork(neuralNetworkFilename);
 
-	char * digits = ReadDigits(trainingDigitsRawFileDirectory);
-	char * labels = ReadLabels(trainingLabelsRawFileDirectory);
-	
+	Train(trainingData, epochs, miniBatchSize, learningRate);
+}
+
+HandwrittenDigitRecognizer::HandwrittenDigitRecognizer(vector<int> sizes, string trainingDigitsRawFilename, string trainingLabelsRawFilename, int epochs = RECOMMENDED_EPOCHS, int miniBatchSize = RECOMMENDED_MINI_BATCH_SIZE, double learningRate = RECOMMENDED_LEARNING_RATE)
+{
+	SetNeuralNetwork(sizes);
+
+	Train(trainingDigitsRawFilename, trainingLabelsRawFilename, epochs, miniBatchSize, learningRate);
+}
+HandwrittenDigitRecognizer::HandwrittenDigitRecognizer(vector<int> sizes, NeuralData trainingData, int epochs = RECOMMENDED_EPOCHS, int miniBatchSize = RECOMMENDED_MINI_BATCH_SIZE, double learningRate = RECOMMENDED_LEARNING_RATE)
+{
+	SetNeuralNetwork(sizes);
+
+	Train(trainingData, epochs, miniBatchSize, learningRate);
+}
+
+HandwrittenDigitRecognizer::HandwrittenDigitRecognizer(NeuralNetwork neuralNetwork)
+{
+	SetNeuralNetwork(neuralNetwork);
+}
+HandwrittenDigitRecognizer::HandwrittenDigitRecognizer(NeuralNetwork neuralNetwork, string trainingDigitsRawFilename, string trainingLabelsRawFilename, int epochs = RECOMMENDED_EPOCHS, int miniBatchSize = RECOMMENDED_MINI_BATCH_SIZE, double learningRate = RECOMMENDED_LEARNING_RATE)
+{
+	SetNeuralNetwork(neuralNetwork);
+
+	Train(trainingDigitsRawFilename, trainingLabelsRawFilename, epochs, miniBatchSize, learningRate);
+}
+HandwrittenDigitRecognizer::HandwrittenDigitRecognizer(NeuralNetwork neuralNetwork, NeuralData trainingData, int epochs = RECOMMENDED_EPOCHS, int miniBatchSize = RECOMMENDED_MINI_BATCH_SIZE, double learningRate = RECOMMENDED_LEARNING_RATE)
+{
+	SetNeuralNetwork(neuralNetwork);
+
+	Train(trainingData, epochs, miniBatchSize, learningRate);
+}
+
+HandwrittenDigitRecognizer::~HandwrittenDigitRecognizer()
+{
+	delete neuralNetwork;
+}
+
+void HandwrittenDigitRecognizer::Train(string trainingDigitsRawFilename, string trainingLabelsRawFilename, int epochs = RECOMMENDED_EPOCHS, int miniBatchSize = RECOMMENDED_MINI_BATCH_SIZE, double learningRate = RECOMMENDED_LEARNING_RATE)
+{
+	char * digits = ReadDigits(trainingDigitsRawFilename);
+	char * labels = ReadLabels(trainingLabelsRawFilename);
+
 	neuralNetwork->StochasticGradientDescent(Vectorize(digits, labels), epochs, miniBatchSize, learningRate);
-}
-HandwrittenDigitRecognizer::HandwrittenDigitRecognizer(vector<int> sizes, NeuralData trainingData)
-{
-	neuralNetwork = new NeuralNetwork(sizes, NULL);
-		
-	neuralNetwork->StochasticGradientDescent(trainingData, 100, 30, 0.1);
-}
-HandwrittenDigitRecognizer::HandwrittenDigitRecognizer(vector<int> sizes, int epochs, int miniBatchSize, double learningRate, NeuralData trainingData)
-{
-	neuralNetwork = new NeuralNetwork(sizes, NULL);
 
+	free(digits);
+	free(labels);
+}
+void HandwrittenDigitRecognizer::Train(NeuralData trainingData, int epochs = RECOMMENDED_EPOCHS, int miniBatchSize = RECOMMENDED_MINI_BATCH_SIZE, double learningRate = RECOMMENDED_LEARNING_RATE)
+{
 	neuralNetwork->StochasticGradientDescent(trainingData, epochs, miniBatchSize, learningRate);
 }
-HandwrittenDigitRecognizer::HandwrittenDigitRecognizer(NeuralNetwork * neuralNetwork)
+
+int HandwrittenDigitRecognizer::Classify(HandwrittenDigit digit)
 {
-	this->neuralNetwork = neuralNetwork;
+	NeuralOutput result = neuralNetwork->FeedForward(digit.GetPixelsPercentage());
+
+	double greatest = 0; int location = 0;
+	for (int i = 0; i < 10; i++)
+		if (result(i, 0) > greatest)
+		{
+			greatest = result(i, 0);
+			location = i;
+		}
+
+	return location;
 }
-HandwrittenDigitRecognizer::HandwrittenDigitRecognizer(NeuralNetwork * neuralNetwork, string trainingDigitsRawFileDirectory, string trainingLabelsRawFileDirectory)
+
+void HandwrittenDigitRecognizer::SetNeuralNetwork(string neuralNetworkFilename)
 {
-	this->neuralNetwork = neuralNetwork;
-
-	char * digits = ReadDigits(trainingDigitsRawFileDirectory);
-	char * labels = ReadLabels(trainingLabelsRawFileDirectory);
-
-	this->neuralNetwork->StochasticGradientDescent(Vectorize(digits, labels), 100, 30, 0.1);
+	delete neuralNetwork;
+	neuralNetwork = new NeuralNetwork(neuralNetworkFilename);
 }
-HandwrittenDigitRecognizer::HandwrittenDigitRecognizer(NeuralNetwork * neuralNetwork, int epochs, int miniBatchSize, double learningRate, string trainingDigitsRawFileDirectory, string trainingLabelsRawFileDirectory)
+void HandwrittenDigitRecognizer::SetNeuralNetwork(vector<int> sizes)
 {
-	this->neuralNetwork = neuralNetwork;
-
-	char * digits = ReadDigits(trainingDigitsRawFileDirectory);
-	char * labels = ReadLabels(trainingLabelsRawFileDirectory);
-
-	this->neuralNetwork->StochasticGradientDescent(Vectorize(digits, labels), epochs, miniBatchSize, learningRate);
+	delete neuralNetwork;
+	neuralNetwork = new NeuralNetwork(sizes);
 }
-HandwrittenDigitRecognizer::HandwrittenDigitRecognizer(NeuralNetwork * neuralNetwork, NeuralData trainingData)
+void HandwrittenDigitRecognizer::SetNeuralNetwork(NeuralNetwork neuralNetwork)
 {
-	this->neuralNetwork = neuralNetwork;
-
-	vector<vector<Col<double>>> blank;
-	this->neuralNetwork->StochasticGradientDescent(trainingData, 100, 30, 0.1, blank);
+	delete this->neuralNetwork;
+	this->neuralNetwork = new NeuralNetwork(neuralNetwork);
 }
-HandwrittenDigitRecognizer::HandwrittenDigitRecognizer(NeuralNetwork * neuralNetwork, int epochs, int miniBatchSize, double learningRate, NeuralData trainingData)
+NeuralNetwork * HandwrittenDigitRecognizer::GetNeuralNetwork()
 {
-	this->neuralNetwork = neuralNetwork;
-
-	this->neuralNetwork->StochasticGradientDescent(trainingData, epochs, miniBatchSize, learningRate);
+	return neuralNetwork;
 }
 
 NeuralData HandwrittenDigitRecognizer::Vectorize(char * digits, char * labels)
@@ -134,50 +178,31 @@ NeuralData HandwrittenDigitRecognizer::Vectorize(char * digits, char * labels)
 
 	return Output;
 }
-char * HandwrittenDigitRecognizer::ReadDigits(string digitsRawFileDirectory)
-{
-	ifstream digitsFile(digitsRawFileDirectory, ios::binary);
 
-	int header[4];
-	char * digits = (char *)malloc(60000 /*Number of images*/ * 28 /*Pixel width*/ * 28 /*Pixel height*/);
-	
+char * HandwrittenDigitRecognizer::ReadDigits(string digitsRawFilename)
+{
+	ifstream digitsFile(digitsRawFilename, ios::binary);
+
+	int header[4];	
 	digitsFile.read((char *)header, sizeof(unsigned int) * 4);
-	digitsFile.read(digits, 60000 /*Number of images*/ * 28 /*Pixel width*/ * 28 /*Pixel height*/);
+
+	char * digits = (char *)malloc(header[1] /*Number of images*/ * 28 /*Pixel width*/ * 28 /*Pixel height*/);
+	digitsFile.read(digits, header[1] /*Number of images*/ * 28 /*Pixel width*/ * 28 /*Pixel height*/);
 
 	return digits;
 }
-char * HandwrittenDigitRecognizer::ReadLabels(string labelsRawFileDirectory)
+char * HandwrittenDigitRecognizer::ReadLabels(string labelsRawFilename)
 {
 
-	ifstream labelsFile(labelsRawFileDirectory, ios::binary);
+	ifstream labelsFile(labelsRawFilename, ios::binary);
 
-	int header[2];
-	char * labels = (char *)malloc(60000 /*Number of images*/);
-	
+	int header[2];	
 	labelsFile.read((char *)header, sizeof(unsigned int) * 2);
-	labelsFile.read(labels, 60000 /*Number of images*/);
+
+	char * labels = (char *)malloc(header[1] /*Number of images*/);
+	labelsFile.read(labels, header[1] /*Number of images*/);
 
 	return labels;
-}
-
-HandwrittenDigitRecognizer::~HandwrittenDigitRecognizer()
-{
-	delete neuralNetwork;
-}
-
-int HandwrittenDigitRecognizer::Classify(HandwrittenDigit digit)
-{
-	NeuralOutput result = neuralNetwork->FeedForward(digit.GetPixelsPercentage());
-
-	double greatest = 0; int location = 0;
-	for (int i = 0; i < 10; i++)
-		if (result(i, 0) > greatest)
-		{
-			greatest = result(i, 0);
-			location = i;
-		}
-
-	return location;
 }
 
 #endif
