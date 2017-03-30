@@ -137,12 +137,12 @@ int HandwrittenDigitRecognizer::Classify(HandwrittenDigit digit)
 void HandwrittenDigitRecognizer::SetNeuralNetwork(string neuralNetworkFilename)
 {
 	delete neuralNetwork;
-	neuralNetwork = new NeuralNetwork(neuralNetworkFilename);
+	neuralNetwork = new NeuralNetwork(neuralNetworkFilename, NULL);
 }
 void HandwrittenDigitRecognizer::SetNeuralNetwork(vector<int> sizes)
 {
 	delete neuralNetwork;
-	neuralNetwork = new NeuralNetwork(sizes);
+	neuralNetwork = new NeuralNetwork(sizes, NULL);
 }
 void HandwrittenDigitRecognizer::SetNeuralNetwork(NeuralNetwork neuralNetwork)
 {
