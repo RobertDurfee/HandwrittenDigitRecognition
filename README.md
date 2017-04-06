@@ -2,7 +2,7 @@
 C++ class for recognizing handwritten digits from 0 to 9 provided by MNIST.
 
 ### Disclaimer
-This is not production-worthy code! View this simply as a proof-of-concept.
+This is not production-worthy code! View this simply as a proof-of-concept. Preconditions are implicit. No error checking exists.
 
 ### Initialization
 ```C++
